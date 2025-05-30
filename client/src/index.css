@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Custom theme using PRD color palette */
+    --background: 202 31% 85%; /* sage #CAD2C5 as base background */
+    --foreground: 248 65% 15%; /* midnight-blue #0C0A3E as text */
+
+    --card: 0 0% 100%; /* white cards for contrast */
+    --card-foreground: 248 65% 15%; /* midnight-blue text */
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 248 65% 15%;
+
+    --primary: 193 36% 31%; /* teal #326771 as primary */
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 202 31% 85%; /* sage for secondary */
+    --secondary-foreground: 248 65% 15%;
+
+    --muted: 202 31% 75%; /* darker sage for muted */
+    --muted-foreground: 248 45% 35%;
+
+    --accent: 11 66% 20%; /* burgundy #551B14 for accents */
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 202 20% 70%;
+    --input: 0 0% 100%;
+    --ring: 193 36% 31%; /* teal ring */
+
+    --radius: 0.5rem;
+
+    /* Custom color variables */
+    --midnight-blue: #0c0a3e;
+    --teal: #326771;
+    --burgundy: #551b14;
+    --sage: #cad2c5;
+  }
+
+  .dark {
+    --background: 248 65% 8%; /* dark midnight-blue */
+    --foreground: 202 31% 85%; /* sage text */
+
+    --card: 248 65% 12%;
+    --card-foreground: 202 31% 85%;
+
+    --popover: 248 65% 12%;
+    --popover-foreground: 202 31% 85%;
+
+    --primary: 193 36% 31%; /* keep teal as primary */
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 248 45% 20%;
+    --secondary-foreground: 202 31% 85%;
+
+    --muted: 248 45% 15%;
+    --muted-foreground: 202 20% 60%;
+
+    --accent: 11 66% 25%; /* slightly lighter burgundy for dark mode */
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 248 45% 20%;
+    --input: 248 45% 15%;
+    --ring: 193 36% 31%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

@@ -1,0 +1,13 @@
+Meeting Notes - Project Alpha
+
+Action Items:
+1. John needs to complete the database migration by June 5th
+2. Sarah should review the security documentation - high priority
+3. Team meeting scheduled for next Tuesday at 10 AM
+4. Code review session this Friday afternoon
+5. Deploy to staging environment before end of week
+6. Update project timeline document - low priority when you have time
+
+Additional Notes:
+- Budget approval needed urgently for new servers
+- Client feedback on prototype due next Monday
