@@ -103,6 +103,8 @@ Try these examples with the AI-powered task extraction:
 
 ![IMG-20250530-WA0003](https://github.com/user-attachments/assets/57864b1d-821f-4e48-b4d6-b51e31ae2166)
 
+The landing page showcasing the application's AI-powered task management capabilities with a clean, modern interface.
+
 # Register
 
 ![IMG-20250530-WA0008](https://github.com/user-attachments/assets/db40c58f-2828-4a3f-81c0-08660d7d4751)
@@ -111,12 +113,16 @@ Try these examples with the AI-powered task extraction:
 
 ![IMG-20250530-WA0009](https://github.com/user-attachments/assets/d79863be-dbec-45d7-b0b7-ea4901c5d8cd)
 
-# uplaodind via txt file or you can type in general language
+# Task Input
 ![IMG-20250530-WA0007](https://github.com/user-attachments/assets/6fac4520-8f27-4ad4-9450-dca86f496e4b)
 
-#dashbaoard
+Flexible input options - users can either type natural language or upload a text file containing meeting notes or task descriptions.
+
+# Dashbaoard
 
 ![IMG-20250530-WA0004](https://github.com/user-attachments/assets/130c6cd2-f282-4703-88db-e1b3d8aa585c)
+
+Main task dashboard displaying organized tasks extracted by AI, with status indicators, due dates, and assignee information.
 
 
 ## 🌟 What Makes This Special
