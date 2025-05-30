@@ -19,10 +19,20 @@ import { Label } from "@/components/ui/label";
 import { authService } from "@/services/authService";
 import { useAuthStore } from "@/store/authStore";
 import PublicLayout from "@/components/PublicLayout";
+import { formatErrorMessage } from "@/lib/validation";
 
 const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Please enter a valid email address")
+    .max(100, "Email must be less than 100 characters")
+    .toLowerCase(),
+  password: z
+    .string()
+    .min(1, "Password is required")
+    .min(6, "Password must be at least 6 characters")
+    .max(128, "Password must be less than 128 characters"),
 });
 
 export default function Login() {
@@ -37,16 +47,26 @@ export default function Login() {
   } = useForm({
     resolver: zodResolver(loginSchema),
   });
-
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const response = await authService.login(data);
+      // Additional client-side validations
+      if (!data.email.trim() || !data.password.trim()) {
+        toast.error("Email and password are required");
+        return;
+      }
+
+      const response = await authService.login({
+        email: data.email.toLowerCase().trim(),
+        password: data.password,
+      });
+
       setAuth(response.user, response.token);
-      toast.success("Login successful!");
+      toast.success(`🎉 Welcome back, ${response.user.name}!`);
       navigate("/dashboard");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Login failed");
+      console.error("Login error:", error);
+      toast.error(formatErrorMessage(error));
     } finally {
       setLoading(false);
     }

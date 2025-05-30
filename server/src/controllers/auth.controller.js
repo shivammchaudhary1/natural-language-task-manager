@@ -10,19 +10,44 @@ export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
+    // Additional server-side validations
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // Trim and normalize data
+    const normalizedName = name.trim();
+    const normalizedEmail = email.toLowerCase().trim();
+
     // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: "Email already registered",
+        message:
+          "Email already registered. Please use a different email or try logging in.",
+      });
+    }
+
+    // Check for password containing name
+    if (
+      password
+        .toLowerCase()
+        .includes(normalizedName.toLowerCase().split(" ")[0])
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Password should not contain your name",
       });
     }
 
     // Create new user
     const user = await User.create({
-      name,
-      email,
+      name: normalizedName,
+      email: normalizedEmail,
       password,
     });
 
@@ -31,6 +56,7 @@ export const register = async (req, res) => {
 
     res.status(201).json({
       success: true,
+      message: "Account created successfully",
       token,
       user: {
         id: user._id,
@@ -39,9 +65,28 @@ export const register = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("Registration error:", error);
+
+    // Handle specific MongoDB errors
+    if (error.name === "ValidationError") {
+      const errors = Object.values(error.errors).map((err) => err.message);
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        details: errors[0],
+      });
+    }
+
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already registered",
+      });
+    }
+
     res.status(500).json({
       success: false,
-      message: error.message || "Error registering user",
+      message: "Error registering user. Please try again later.",
     });
   }
 };
@@ -54,12 +99,25 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Additional server-side validations
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required",
+      });
+    }
+
+    // Normalize email
+    const normalizedEmail = email.toLowerCase().trim();
+
     // Check if user exists
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email: normalizedEmail }).select(
+      "+password"
+    );
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "Invalid credentials",
+        message: "Invalid email or password",
       });
     }
 
@@ -68,7 +126,7 @@ export const login = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: "Invalid credentials",
+        message: "Invalid email or password",
       });
     }
 
@@ -77,6 +135,7 @@ export const login = async (req, res) => {
 
     res.status(200).json({
       success: true,
+      message: "Login successful",
       token,
       user: {
         id: user._id,
@@ -85,9 +144,11 @@ export const login = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("Login error:", error);
+
     res.status(500).json({
       success: false,
-      message: error.message || "Error logging in",
+      message: "Error logging in. Please try again later.",
     });
   }
 };
