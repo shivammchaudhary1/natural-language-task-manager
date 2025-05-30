@@ -302,9 +302,12 @@ export default function TaskList({
         <div className="flex items-center justify-between mt-6 px-4 py-3 bg-white rounded-lg border border-teal/20">
           <div className="flex items-center gap-2 text-sm text-midnight-blue/70">
             <span>
-              Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
-              {Math.min(pagination.page * pagination.limit, pagination.total)}{" "}
-              of {pagination.total} tasks
+              Showing {(pagination.currentPage - 1) * pagination.limit + 1} to{" "}
+              {Math.min(
+                pagination.currentPage * pagination.limit,
+                pagination.totalTasks
+              )}{" "}
+              of {pagination.totalTasks} tasks
             </span>
           </div>
 
@@ -312,8 +315,8 @@ export default function TaskList({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onPageChange(pagination.page - 1)}
-              disabled={pagination.page <= 1}
+              onClick={() => onPageChange(pagination.currentPage - 1)}
+              disabled={pagination.currentPage <= 1}
               className="border-teal/30 text-midnight-blue hover:bg-teal/10"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -328,7 +331,7 @@ export default function TaskList({
                   if (pagination.totalPages <= 5) {
                     pageNumber = i + 1;
                   } else {
-                    const start = Math.max(1, pagination.page - 2);
+                    const start = Math.max(1, pagination.currentPage - 2);
                     const end = Math.min(pagination.totalPages, start + 4);
                     pageNumber = start + i;
                     if (pageNumber > end) return null;
@@ -338,12 +341,14 @@ export default function TaskList({
                     <Button
                       key={pageNumber}
                       variant={
-                        pageNumber === pagination.page ? "default" : "outline"
+                        pageNumber === pagination.currentPage
+                          ? "default"
+                          : "outline"
                       }
                       size="sm"
                       onClick={() => onPageChange(pageNumber)}
                       className={
-                        pageNumber === pagination.page
+                        pageNumber === pagination.currentPage
                           ? "bg-teal text-white"
                           : "border-teal/30 text-midnight-blue hover:bg-teal/10"
                       }
@@ -358,8 +363,8 @@ export default function TaskList({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onPageChange(pagination.page + 1)}
-              disabled={pagination.page >= pagination.totalPages}
+              onClick={() => onPageChange(pagination.currentPage + 1)}
+              disabled={pagination.currentPage >= pagination.totalPages}
               className="border-teal/30 text-midnight-blue hover:bg-teal/10"
             >
               Next
