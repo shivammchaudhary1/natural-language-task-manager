@@ -1,0 +1,11 @@
+John needs to finish migrating the database by June 5th.
+
+Sarah should review the security documentation — it’s high priority.
+
+Alex will schedule the team meeting for next Tuesday at 10 AM.
+
+Maria will lead the code review session this Friday afternoon.
+
+David needs to make sure we deploy to the staging environment before the week ends.
+
+Emily, when you have time, please update the project timeline — it’s low priority.
