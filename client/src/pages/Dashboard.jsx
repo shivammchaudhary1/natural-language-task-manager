@@ -39,7 +39,7 @@ export default function Dashboard() {
       sortBy: "createdAt",
       sortOrder: "desc",
     },
-    pagination = { page: 1, limit: 10, total: 0, totalPages: 0 },
+    pagination = { currentPage: 1, limit: 10, totalTasks: 0, totalPages: 0 },
     setTasks,
     setLoading,
     setFilters,
@@ -57,7 +57,7 @@ export default function Dashboard() {
   useEffect(() => {
     loadTasks();
     loadStats();
-  }, [filters?.priority, filters?.search, pagination?.page]);
+  }, [filters?.priority, filters?.search, pagination?.currentPage]);
 
   const loadStats = async () => {
     try {
@@ -73,7 +73,7 @@ export default function Dashboard() {
     setLoading(true);
     try {
       const params = {
-        page: pagination?.page || 1,
+        page: pagination?.currentPage || 1,
         limit: pagination?.limit || 10,
         sortBy: filters?.sortBy || "createdAt",
         sortOrder: filters?.sortOrder || "desc",
@@ -106,16 +106,16 @@ export default function Dashboard() {
   const handleSearch = (e) => {
     const value = e.target.value;
     setFilters({ ...filters, search: value });
-    setPagination({ ...pagination, page: 1 }); // Reset to first page when searching
+    setPagination({ ...pagination, currentPage: 1 }); // Reset to first page when searching
   };
 
   const handlePriorityFilter = (priority) => {
     setFilters({ ...filters, priority });
-    setPagination({ ...pagination, page: 1 }); // Reset to first page when filtering
+    setPagination({ ...pagination, currentPage: 1 }); // Reset to first page when filtering
   };
 
   const handlePageChange = (page) => {
-    setPagination({ ...pagination, page });
+    setPagination({ ...pagination, currentPage: page });
   };
 
   return (

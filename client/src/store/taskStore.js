@@ -5,9 +5,9 @@ export const useTaskStore = create((set, get) => ({
   isLoading: false,
   error: null,
   pagination: {
-    page: 1,
+    currentPage: 1,
     limit: 10,
-    total: 0,
+    totalTasks: 0,
     totalPages: 0,
   },
   filters: {
@@ -57,9 +57,9 @@ export const useTaskStore = create((set, get) => ({
         sortOrder: "desc",
       },
       pagination: {
-        page: 1,
+        currentPage: 1,
         limit: 10,
-        total: 0,
+        totalTasks: 0,
         totalPages: 0,
       },
     }),
