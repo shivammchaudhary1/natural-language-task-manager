@@ -57,14 +57,23 @@ const Home = () => {
         {/* Hero Section */}
         <section className="container mx-auto px-4 py-20 text-center">
           <div className="max-w-4xl mx-auto">
+            {" "}
             <h1 className="text-5xl md:text-6xl font-bold text-midnight-blue mb-6">
               Transform Your Words Into
               <span className="text-teal block">Organized Tasks</span>
+              <span className="text-lg md:text-xl font-normal text-burgundy bg-burgundy/10 px-4 py-2 rounded-full inline-block mt-4">
+                🤖 AI-Powered by Google Gemini
+              </span>
             </h1>
             <p className="text-xl text-midnight-blue/80 mb-8 max-w-2xl mx-auto">
-              The world&apos;s first Natural Language Task Manager powered by
-              AI. Simply type or upload your thoughts, and watch them become
-              actionable tasks.
+              The world&apos;s first{" "}
+              <strong>AI-Powered Natural Language Task Manager</strong> using
+              <span className="text-teal font-semibold">
+                {" "}
+                Google Gemini API
+              </span>
+              . Simply type or upload your thoughts, and watch our intelligent
+              AI transform them into perfectly organized, actionable tasks.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/signup">
