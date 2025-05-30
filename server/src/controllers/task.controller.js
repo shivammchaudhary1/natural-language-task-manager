@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Task from "../models/task.model.js";
 import User from "../models/user.model.js";
 import { parseTasksFromText } from "../services/gemini.service.js";
@@ -410,52 +411,102 @@ export const parseAndCreateTasks = async (req, res) => {
  */
 export const getTaskStats = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = new mongoose.Types.ObjectId(req.user.userId);
 
-    // Get total task count
-    const totalTasks = await Task.countDocuments({ createdBy: userId });
-
-    // Get priority statistics
-    const priorityStats = await Task.aggregate([
-      { $match: { createdBy: userId } },
-      { $group: { _id: "$priority", count: { $sum: 1 } } },
-    ]);
-
-    // Get status statistics
-    const statusStats = await Task.aggregate([
-      { $match: { createdBy: userId } },
-      { $group: { _id: "$status", count: { $sum: 1 } } },
-    ]);
-
-    // Format the response
-    const stats = {
-      total: totalTasks,
-      priority: {
-        P1: 0,
-        P2: 0,
-        P3: 0,
-        P4: 0,
+    const pipeline = [
+      {
+        $match: { createdBy: userId },
       },
-      status: {
-        todo: 0,
-        "in-progress": 0,
-        completed: 0,
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 },
+          priorityStats: {
+            $push: {
+              priority: "$priority",
+              status: "$status",
+            },
+          },
+        },
       },
-    };
+      {
+        $project: {
+          _id: 0,
+          total: 1,
+          priority: {
+            P1: {
+              $size: {
+                $filter: {
+                  input: "$priorityStats",
+                  cond: { $eq: ["$$this.priority", "P1"] },
+                },
+              },
+            },
+            P2: {
+              $size: {
+                $filter: {
+                  input: "$priorityStats",
+                  cond: { $eq: ["$$this.priority", "P2"] },
+                },
+              },
+            },
+            P3: {
+              $size: {
+                $filter: {
+                  input: "$priorityStats",
+                  cond: { $eq: ["$$this.priority", "P3"] },
+                },
+              },
+            },
+            P4: {
+              $size: {
+                $filter: {
+                  input: "$priorityStats",
+                  cond: { $eq: ["$$this.priority", "P4"] },
+                },
+              },
+            },
+          },
+          status: {
+            todo: {
+              $size: {
+                $filter: {
+                  input: "$priorityStats",
+                  cond: { $eq: ["$$this.status", "todo"] },
+                },
+              },
+            },
+            "in-progress": {
+              $size: {
+                $filter: {
+                  input: "$priorityStats",
+                  cond: { $eq: ["$$this.status", "in-progress"] },
+                },
+              },
+            },
+            completed: {
+              $size: {
+                $filter: {
+                  input: "$priorityStats",
+                  cond: { $eq: ["$$this.status", "completed"] },
+                },
+              },
+            },
+          },
+        },
+      },
+    ];
 
-    // Map priority stats
-    priorityStats.forEach((stat) => {
-      if (stat._id && stats.priority.hasOwnProperty(stat._id)) {
-        stats.priority[stat._id] = stat.count;
-      }
-    });
+    const result = await Task.aggregate(pipeline);
 
-    // Map status stats
-    statusStats.forEach((stat) => {
-      if (stat._id && stats.status.hasOwnProperty(stat._id)) {
-        stats.status[stat._id] = stat.count;
-      }
-    });
+    const stats =
+      result.length > 0
+        ? result[0]
+        : {
+            total: 0,
+            priority: { P1: 0, P2: 0, P3: 0, P4: 0 },
+            status: { todo: 0, "in-progress": 0, completed: 0 },
+          };
 
     res.status(200).json({
       success: true,

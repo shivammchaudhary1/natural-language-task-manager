@@ -51,6 +51,7 @@ const taskSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    versionKey: false, // Disable __v field
   }
 );
 
