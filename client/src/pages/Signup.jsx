@@ -19,16 +19,42 @@ import { Label } from "@/components/ui/label";
 import { authService } from "@/services/authService";
 import { useAuthStore } from "@/store/authStore";
 import PublicLayout from "@/components/PublicLayout";
+import PasswordStrengthIndicator from "@/components/PasswordStrengthIndicator";
+import { formatErrorMessage } from "@/lib/validation";
 
 const signupSchema = z
   .object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
-    email: z.string().email("Please enter a valid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    name: z
+      .string()
+      .min(2, "Name must be at least 2 characters")
+      .max(50, "Name must be less than 50 characters")
+      .regex(/^[a-zA-Z\s]+$/, "Name can only contain letters and spaces")
+      .transform((name) => name.trim()),
+    email: z
+      .string()
+      .email("Please enter a valid email address")
+      .max(100, "Email must be less than 100 characters")
+      .toLowerCase()
+      .refine((email) => {
+        // Additional email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+      }, "Please enter a valid email address"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .max(128, "Password must be less than 128 characters")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[0-9]/, "Password must contain at least one number")
+      .regex(
+        /[^A-Za-z0-9]/,
+        "Password must contain at least one special character"
+      ),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don&apos;t match",
+    message: "Passwords don't match",
     path: ["confirmPassword"],
   });
 
@@ -41,24 +67,68 @@ export default function Signup() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(signupSchema),
   });
 
+  // Watch password and name for strength indicator
+  const watchedPassword = watch("password", "");
+  const watchedName = watch("name", "");
   const onSubmit = async (data) => {
     setLoading(true);
     try {
+      // Additional client-side validations
+      if (data.name.trim().length === 0) {
+        toast.error("Name cannot be empty");
+        return;
+      }
+
+      // Check for common weak passwords
+      const commonPasswords = [
+        "password",
+        "123456",
+        "12345678",
+        "qwerty",
+        "abc123",
+        "password123",
+        "admin",
+        "letmein",
+        "welcome",
+        "monkey",
+      ];
+      if (commonPasswords.includes(data.password.toLowerCase())) {
+        toast.error(
+          "Please choose a stronger password. Avoid common passwords."
+        );
+        return;
+      }
+
+      // Check if password contains name
+      if (
+        data.password
+          .toLowerCase()
+          .includes(data.name.toLowerCase().split(" ")[0])
+      ) {
+        toast.error("Password should not contain your name");
+        return;
+      }
+
       const response = await authService.register({
-        name: data.name,
-        email: data.email,
+        name: data.name.trim(),
+        email: data.email.toLowerCase().trim(),
         password: data.password,
       });
+
       setAuth(response.user, response.token);
-      toast.success("Account created successfully!");
+      toast.success(
+        "🎉 Account created successfully! Welcome to the task manager!"
+      );
       navigate("/dashboard");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Registration failed");
+      console.error("Registration error:", error);
+      toast.error(formatErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -148,8 +218,12 @@ export default function Signup() {
                     ) : (
                       <Eye className="h-4 w-4" />
                     )}
-                  </button>
+                  </button>{" "}
                 </div>
+                <PasswordStrengthIndicator
+                  password={watchedPassword}
+                  name={watchedName}
+                />
                 {errors.password && (
                   <p className="text-sm text-burgundy">
                     {errors.password.message}
